@@ -103,11 +103,10 @@ bool walk(pos_t pos) {
 	 	*/
 	do
 	{
-		int i = 0, j = 0;
-
+		int i, j; //(colocar um post.atual)
 		if(i > 0, i < num_rows, j > 0, j < num_cols)
 		{
-
+			if(maze[i+1][j] == '#') ;
 		}
 		/* code */
 	} while (true);
