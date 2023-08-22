@@ -86,6 +86,7 @@ void print_maze() {
 // Recebe como entrada a posição initial e retorna um booleando indicando se a saída foi encontrada
 bool walk(pos_t pos) {
 	
+	pos_t prox = {0, 0};
 	// Repita até que a saída seja encontrada ou não existam mais posições não exploradas
 		// Marcar a posição atual com o símbolo '.'
 		// Limpa a tela
@@ -103,11 +104,44 @@ bool walk(pos_t pos) {
 	 	*/
 	do
 	{
-		int i, j; //(colocar um post.atual)
-		if(i > 0, i < num_rows, j > 0, j < num_cols)
+		//int i, j; //(colocar um post.atual)
+		if(pos.i > 0, pos.i < num_rows, pos.j > 0, pos.j < num_cols)
 		{
-			if(maze[i+1][j] == '#') ;
+			if(maze[pos.i][pos.j+1] == 'x' && pos.j+1 < num_cols)
+			{
+				prox.i = pos.i;
+				prox.j = pos.j;
+			}
+			if(maze[pos.i][pos.j-1] == 'x' && pos.j+1 > 0)
+			{
+				if (prox.i > 0)
+				{
+					valid_positions.push(prox);
+				}
+				prox.i = pos.i;
+				prox.j = pos.j;
+			}
+			if(maze[pos.i+1][pos.j] == 'x' && pos.j+1 < num_rows)
+			{
+				if (prox.i > 0)
+				{
+					valid_positions.push(prox);
+				}
+				prox.i = pos.i;
+				prox.j = pos.j;
+			}
+			if(maze[pos.i-1][pos.j] == 'x' && pos.j+1 > 0)
+			{
+				if (prox.i > 0)
+				{
+					valid_positions.push(prox);
+				}
+				prox.i = pos.i;
+				prox.j = pos.j;
+			}
 		}
+		
+		
 		/* code */
 	} while (true);
 	
