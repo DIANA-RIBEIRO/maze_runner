@@ -82,6 +82,49 @@ void print_maze() {
 	}
 }
 
+int compare(pos_t pos, char value, pos_t* prox)
+{
+	if(maze[pos.i][pos.j+1] == value && pos.j+1 < num_cols)
+	{
+		prox->i = pos.i;
+		prox->j = pos.j;
+		if(value == 's') return 1;
+	}
+	if(maze[pos.i][pos.j-1] == value && pos.j+1 > 0)
+	{
+		if (prox->i > 0)
+		{
+			valid_positions.push(*prox);
+		}
+		prox->i = pos.i;
+		prox->j = pos.j;
+		if(value == 's') return 1;
+	}
+	if(maze[pos.i+1][pos.j] == value && pos.j+1 < num_rows)
+	{
+		if (prox->i > 0)
+		{
+			valid_positions.push(*prox);
+		}
+		prox->i = pos.i;
+		prox->j = pos.j;
+		if(value == 's') return 1;
+	}
+	if(maze[pos.i-1][pos.j] == value && pos.j+1 > 0)
+	{
+		if (prox->i > 0)
+		{
+			valid_positions.push(*prox);
+		}
+		prox->i = pos.i;
+		prox->j = pos.j;
+		if(value == 's') return 1;
+	}
+
+	if (!valid_positions.empty()) return 1;
+	return 0;
+}
+
 // Função responsável pela navegação.
 // Recebe como entrada a posição initial e retorna um booleando indicando se a saída foi encontrada
 bool walk(pos_t pos) {
@@ -104,9 +147,45 @@ bool walk(pos_t pos) {
 	 	*/
 	do
 	{
+		// TENHO QUE CRIAR UMA MATRIZ COM O CAMINHO FINAL? ACHO Q SIM NÉ, PRA PRINTAR
 		//int i, j; //(colocar um post.atual)
 		if(pos.i > 0, pos.i < num_rows, pos.j > 0, pos.j < num_cols)
 		{
+			if(compare(pos, 'r', &prox) /*== 1*/)
+			{
+				maze[prox.i][prox.j] = '.';
+				return 1;
+			}
+
+			else
+			{
+				if(compare(pos, 'x', &prox) && valid_positions.size() == 1)
+				{
+					maze[pos.i][pos.j] = '.';
+					pos = prox; 
+				}
+				if(compare(pos, 'x', &prox) && valid_positions.size() > 1)
+				{
+					while(valid_positions.empty()) // N sei, parece errado ainda
+					{
+						//pos = valid_positions.top();
+						if(!walk(valid_positions.top()))
+						{
+							valid_positions.pop(); // Em tese vai remover o ponto que a gnt tava usando agora.
+						}
+					}
+				}
+				if(!compare(pos, 'x', &prox))
+				{
+					valid_positions.pop(); // Em tese vai remover o ponto que a gnt tava usando agora.
+					pos = valid_positions.top();
+					return 0;
+				}
+
+			}
+
+
+			/*
 			if(maze[pos.i][pos.j+1] == 'x' && pos.j+1 < num_cols)
 			{
 				prox.i = pos.i;
@@ -138,9 +217,10 @@ bool walk(pos_t pos) {
 				}
 				prox.i = pos.i;
 				prox.j = pos.j;
-			}
-		}
-		
+			}*/
+
+
+		}	
 		
 		/* code */
 	} while (true);
@@ -151,10 +231,10 @@ bool walk(pos_t pos) {
 		// Verifica se a pilha de posições nao esta vazia 
 		//Caso não esteja, pegar o primeiro valor de  valid_positions, remove-lo e chamar a funçao walk com esse valor
 		// Caso contrario, retornar falso
-		if (!valid_positions.empty()) {
+		/*if (!valid_positions.empty()) {
 			pos_t next_position = valid_positions.top();
 			valid_positions.pop();
-		}
+		}*/
 	return false;
 }
 
