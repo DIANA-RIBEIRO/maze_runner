@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stack>
 #include <iostream>
+#include <chrono> // Para std::chrono
+#include <thread> // Para std::this_thread
 
 using namespace std;
 
@@ -113,68 +115,72 @@ void print_maze() {
 	}
 }
 
-
+int options;
+int count = 0;
 int compare(pos_t pos, char value, pos_t* prox)
 {
-	prox->i = -1;
-	prox->j = -1;
-
-    //printf("%s", "\n comp\n");
-	cout << value << "\n1: " << maze[pos.i][pos.j+1];
-	if(maze[pos.i][pos.j+1] == value && pos.j+1 < num_cols)
+	options = 0;
+	//if (count == 142) return 1;
+																	//if (count > 141) cout << value << "\n1:" << maze[pos.i][pos.j+1];
+	if(pos.j+1 < num_cols) if(maze[pos.i][pos.j+1] == value)
 	{
-        cout << " <<<  ";
+        															//if (count > 141) cout << " <<<  ";
 		prox->i = pos.i;
 		prox->j = pos.j+1;
-		valid_positions.push(*prox);
-        //printf("%s", "\n comp11\n");
+		options++;
 		if(value == 's') return 1;
-		cout << pos.i ;
 	}
-	cout << "\n2:" << maze[pos.i][pos.j-1];
-	if(maze[pos.i][pos.j-1] == value && pos.j-1 > 0)
+																	//if (count > 141) cout << "\n2:" << maze[pos.i][pos.j-1];
+	if(pos.j-1 >= 0) if(maze[pos.i][pos.j-1] == value)
 	{
-        cout << " <<<";
+        															//if (count > 141) cout << " <<<  ";
 		prox->i = pos.i;
 		prox->j = pos.j-1;
-		valid_positions.push(*prox);
-        //printf("%s", "\n comp22\n");
+		options++;
 		if(value == 's') return 1;
 	}
-	cout << "\n3:" << maze[pos.i+1][pos.j] << num_rows;
-	if(maze[pos.i+1][pos.j] == value && pos.i+1 < num_rows)
+																	//if (count > 141) cout << "\n3:" << maze[pos.i+1][pos.j] << pos.i;
+	
+	if (pos.i+1 < num_rows) if(maze[pos.i+1][pos.j] == value)
 	{
-        cout << " <<<";
+        															//if (count > 141) cout << " <<<";
 		prox->i = pos.i+1;
 		prox->j = pos.j;
-		valid_positions.push(*prox);
-        //printf("%s", "\n comp33\n");
+		options++;
 		if(value == 's') return 1;
 	}
-	cout << "\n4:" << maze[pos.i-1][pos.j];
-	if(maze[pos.i-1][pos.j] == value && pos.i-1 > 0)
+																	////if (count > 141) cout << "\n4:" << maze[pos.i-1][pos.j] << pos.i << endl;
+	if(pos.i-1 >= 0) if(maze[pos.i-1][pos.j] == value)
 	{
-        cout << " <<<";
+        															//if (count > 141) cout << " <<<\n";
 		prox->i = pos.i-1;
 		prox->j = pos.j;
-		valid_positions.push(*prox);
-        //printf("%s", "\n comp44\n");
+		options++;
 		if(value == 's') return 1;
 	}
-	cout << "\n";
-    //printf("%s", "\n comp5\n");
-	if (!valid_positions.empty()) return 1;
-    //printf("%s", "\n comp55\n");
-	cout << "ERRO";
+
+	//if(value == 's') return 0;
+	if (options > 0) return 1;
+	cout << "ERRO\n";
 	return 0;
 }
+
+int contar = 0;
 
 // Função responsável pela navegação.
 // Recebe como entrada a posição initial e retorna um booleando indicando se a saída foi encontrada
 bool walk(pos_t pos) {
-	
+	contar ++;
+	cout << "TÁ NO WALK " << num_cols << num_rows << "\n\n";
+	cout << pos.i << num_cols << pos.j << num_rows << endl;
+	cout << maze[15][0] << " " << maze[15][1] << endl;
+	cout << maze[16][0] << " " << maze[16][1] << endl;
+
+	print_maze();
 	pos_t prox = {0, 0};
-    printf("%s", "\nbb\n");
+
+	//this_thread::sleep_for(std::chrono::seconds(5));
+    //printf("%s", "\nbb\n");
 	// Repita até que a saída seja encontrada ou não existam mais posições não exploradas
 		// Marcar a posição atual com o símbolo '.'
 		// Limpa a tela
@@ -190,7 +196,7 @@ bool walk(pos_t pos) {
 		 		- pos.i-1, pos.j
 		 	Caso alguma das posiçÕes validas seja igual a 's', retornar verdadeiro
 	 	*/
-	int count = 0;
+	
 	do
 	{
 		count++;
@@ -198,65 +204,89 @@ bool walk(pos_t pos) {
 		//int i, j; //(colocar um post.atual)
 		if(pos.i > 0, pos.i < num_rows, pos.j > 0, pos.j < num_cols)
 		{
-            cout << "i: " << pos.i << "\nj:" << pos.j << endl;
-            cout << maze[pos.i][pos.j] << "\n\n";
+			
+																		cout << "i: " << pos.i << ", j:" << pos.j << endl;
+																		if (count > 240) print_maze();
+																		//cout << maze[pos.i][pos.j] << "\n\n";
             
 			if(compare(pos, 's', &prox) /*== 1*/)
 			{
+				maze[pos.i][pos.j] = '.';
 				maze[prox.i][prox.j] = '.';
                 //pos = prox
-                printf("%s", "\n cc\n");
+                																			//printf("%s", "\n cc\n");
 				return 1;
 			}
-
 			else
 			{
 				if(compare(pos, 'x', &prox))
 				{
-					cout << prox.i;
-					if(valid_positions.size() == 1)
+																						//cout << prox.i << " " << prox.j << endl;
+																						//print_maze();
+					if(options == 1)
 					{
-						printf("%s", "\n dd1\n");
+																									//printf("%s", "\n dd1\n");
 						//cout << maze[pos.i][pos.j] << "%" << maze[prox.i][prox.j];
 						maze[pos.i][pos.j] = '.';
 						pos.i = prox.i;
 						pos.j = prox.j;
-						printf("%s", "\n dd11\n");
-						valid_positions.pop();
+																									//printf("%s", "\n dd11\n");
+						//valid_positions.pop();
 					}
-					else if(valid_positions.size() > 1)
+					else if(options > 1)
 					{
-						cout << "primeiro laço";
-						/*while(valid_positions.empty()) // N sei, parece errado ainda
+						/*																		//cout << "primeiro laço\t";
+						while(!valid_positions.empty()) // N sei, parece errado ainda
 						{
+							cout << "WHILE\n";
 							//pos = valid_positions.top();
+							//this_thread::sleep_for(std::chrono::seconds(1));
+																									maze[pos.i][pos.j] = '.';
+																									pos.i = prox.i;
+																									pos.j = prox.j;
 							if(!walk(valid_positions.top()))
 							{
+								cout << "WALK\n";
+								this_thread::sleep_for(std::chrono::seconds(5));
 								valid_positions.pop(); // Em tese vai remover o ponto que a gnt tava usando agora.
 							}
+							cout << "pulou o While";
+							this_thread::sleep_for(std::chrono::seconds(5));
 						}
-						printf("%s", "\n dd2\n");
+																									//printf("%s", "\n dd2\n");
 						*/
+
+						valid_positions.push(pos);
+						maze[pos.i][pos.j] = '.';
+						pos.i = prox.i;
+						pos.j = prox.j;
 					}
 					else
 					{
-						cout << "acabou o laço";
+						cout << "Compare == 1 para x";
+						// ALEATÓRIO
+						valid_positions.pop();
 					}
 				}
-				else if(!valid_positions.empty())
+				else
 				{
-					printf("%s", "\n vazio\n");
+																								//printf("%s", "\n vazio\n");
+					maze[pos.i][pos.j] = '.';
+					pos.i = valid_positions.top().i;
+					pos.j = valid_positions.top().j;
 					valid_positions.pop(); // Em tese vai remover o ponto que a gnt tava usando agora.
-                    printf("%s", "\n ee2\n.");
+                    																			//printf("%s", "\n ee2\n.");
 					//printf("%c", valid_positions.top().i);
-					cout << valid_positions.top().i ;
-					cout << ".\n";
+																								//cout << valid_positions.top().i ;
+																								//cout << ".\n";
                    // printf("%s", "\n ee1\n");
 
-					pos.i = valid_positions.top().i;
+					/*pos.i = valid_positions.top().i;
                     pos.j = valid_positions.top().j;
-                   // printf("%s", "\n ee3\n");
-					return 0;
+                   // ALEATÓRIO
+				    valid_positions.pop();
+					return 0;*/
+					cout << "Compare == 0 para x";
 				}
 
 			}
@@ -297,11 +327,18 @@ bool walk(pos_t pos) {
 			}*/
 
 
-		}	
+		}
+		else if(!valid_positions.empty())
+		{
+			cout << "Fim da linha";
+			pos.i = valid_positions.top().i;
+            pos.j = valid_positions.top().j;
+			valid_positions.pop();
+		}
 		//printf("%s", "\n ee\n");
 		/* code */
-		cout << "LOOP " << count << endl << endl;
-	} while (count < 200);
+		cout << "\nLOOP " << count << ": ";
+	} while (count < (num_cols*num_rows));
 	
 	cout << "\n"; print_maze();
 
@@ -321,10 +358,11 @@ int main(){
 
     
 
-    pos_t initial_pos = load_maze("../data/maze.txt"/*argv[1]*/);
+    pos_t initial_pos = load_maze("../data/maze7.txt"/*argv[1]*/);
     // chamar a função de navegação
-    printf("%s", "\naaaaa\n");
 	bool exit_found = walk(initial_pos);
+	cout << "\n\n";
+	print_maze();
 	cout << "FIM\n";
     return 0;
 }
