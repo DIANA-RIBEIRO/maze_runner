@@ -210,7 +210,6 @@ bool walk(pos_t pos) {
 					pos.j = valid_positions.top().j;
 					valid_positions.pop();
 				}
-
 			}
 		}
 		else if(!valid_positions.empty())
@@ -220,7 +219,6 @@ bool walk(pos_t pos) {
 			valid_positions.pop();
 		}
 
-		
 		print_maze();
 		this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -239,3 +237,4 @@ int main(int argc, char* argv[]){
     // chamar a função de navegação
 	bool exit_found = walk(initial_pos);
     return 0;
+}
