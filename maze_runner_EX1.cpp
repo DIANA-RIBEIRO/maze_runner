@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stack>
-#include <vector>
 #include <iostream>
 #include <chrono> // Para std::chrono
 #include <thread> // Para std::this_thread
@@ -13,7 +12,6 @@ char** maze; // Voce também pode representar o labirinto como um vetor de vetor
 // Numero de linhas e colunas do labirinto
 int num_rows = 0;
 int num_cols = 0;
-int options = 0;
 
 // Representação de uma posição
 struct pos_t {
@@ -25,7 +23,6 @@ struct pos_t {
 // Estrutura de dados contendo as próximas
 // posicões a serem exploradas no labirinto
 stack<pos_t> valid_positions;
-
 
 /* Inserir elemento: 
 
@@ -101,7 +98,7 @@ pos_t load_maze(const char* file_name) {
 }
 
 // Função que imprime o labirinto
-void print_maze1() {
+void print_maze() {
 	for (int i = 0; i < num_rows; ++i) {
 		for (int j = 0; j < num_cols; ++j) {
 			printf("%c", maze[i][j]);
@@ -110,6 +107,7 @@ void print_maze1() {
 	}
 }
 
+int options, interacoes = 0;
 int compare(pos_t pos, char value, pos_t* prox)
 {
 	options = 0;
@@ -147,17 +145,15 @@ int compare(pos_t pos, char value, pos_t* prox)
 }
 
 int contar = 0;
-bool sFound = 0;
+
 // Função responsável pela navegação.
 // Recebe como entrada a posição initial e retorna um booleando indicando se a saída foi encontrada
 bool walk(pos_t pos) {
-
-	int interacoes = 0;
 	contar ++;
 
 	pos_t prox = {0, 0};
 
-	//cout << interacoes << " ";
+
 	// Repita até que a saída seja encontrada ou não existam mais posições não exploradas
 		// Marcar a posição atual com o símbolo '.'
 		// Limpa a tela
@@ -177,17 +173,14 @@ bool walk(pos_t pos) {
 	do
 	{
 		interacoes++;
-		//system("clear");
+		system("clear");
 
 		if(pos.i > 0, pos.i < num_rows, pos.j > 0, pos.j < num_cols)
 		{
 			if(compare(pos, 's', &prox))
 			{
 				maze[pos.i][pos.j] = '.';
-				maze[prox.i][prox.j] = '.';
-				//system("clear");
-				//print_maze1();
-				sFound = 1;
+				print_maze();
 				return 1;
 			}
 			else
@@ -204,32 +197,15 @@ bool walk(pos_t pos) {
 					else if(options > 1)
 					{
 						valid_positions.push(pos);
-						maze[pos.i][pos.j] = 'A';
+						maze[pos.i][pos.j] = '.';
 						maze[prox.i][prox.j] = 'o';
 						pos.i = prox.i;
 						pos.j = prox.j;
-
-						vector<thread> valid_positions_threads;
-						while(valid_positions.empty())
-						{
-							//cout << "criando thread\n";
-							//valid_positions.push(pos);
-							maze[pos.i][pos.j] = 'Y';
-							valid_positions_threads.push_back(thread(walk, pos));
-							//thread t(walk, pos);
-							//t.join();
-							
-							pos.i = valid_positions.top().i;
-							pos.j = valid_positions.top().j;
-							valid_positions.pop();
-						}
-						for (auto& th : valid_positions_threads) th.join();
 					}
 				}
 				else
 				{
 					maze[pos.i][pos.j] = '.';
-					return 0;
 					pos.i = valid_positions.top().i;
 					pos.j = valid_positions.top().j;
 					valid_positions.pop();
@@ -242,7 +218,10 @@ bool walk(pos_t pos) {
             pos.j = valid_positions.top().j;
 			valid_positions.pop();
 		}
+
+		print_maze();
 		this_thread::sleep_for(std::chrono::milliseconds(50));
+
 	} while (interacoes < (num_cols*num_rows));
 	
 		// Verifica se a pilha de posições nao esta vazia 
@@ -252,38 +231,10 @@ bool walk(pos_t pos) {
 	return false;
 }
 
-/*bool firstThreads(pos_t pos)
-{
-	thread first(walk, pos);
+int main(int argc, char* argv[]){
 
-	while (!sFound)
-	{
-		//print_maze();
-		//cout << "firstThreads\n";
-		this_thread::sleep_for(std::chrono::milliseconds(50));
-	}
-	first.join();
-
-	return sFound;
-}*/
-
-
-int main(/*int argc, char* argv[]*/){
-
-    pos_t initial_pos = load_maze("../data/maze2.txt"/*argv[1]*/);
+    pos_t initial_pos = load_maze(argv[1]);
     // chamar a função de navegação
-	//bool exit_found = walk(initial_pos);
-
-	thread first(walk, initial_pos);
-
-	do
-	{
-		system("clear");
-		print_maze1();
-		this_thread::sleep_for(std::chrono::milliseconds(50));
-	}while (!sFound);
-
-	first.join();
-
+	bool exit_found = walk(initial_pos);
     return 0;
 }
