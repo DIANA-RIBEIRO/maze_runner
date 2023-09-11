@@ -84,7 +84,8 @@ void print_maze() {
 		for (int j = 0; j < num_cols; ++j) {
 			//system("Color 01");
 			//printf ("Meu %c primeiro %c programa em C e C++ \n\n",34,34);
-			printf("%c", maze[i][j]);
+			if(maze[i][j] == 'o') cout << "\x1b[31mo\x1b[0m";
+			else printf("%c", maze[i][j]);
 		}
 		printf("\n");
 	}
@@ -237,6 +238,7 @@ int main(){
 
     first.join();
     timer.detach();
-
+	//print_maze();
+	cout << sFound << endl;
     return 1;
 }
