@@ -82,8 +82,6 @@ pos_t load_maze(const char* file_name) {
 void print_maze() {
 	for (int i = 0; i < num_rows; ++i) {
 		for (int j = 0; j < num_cols; ++j) {
-			//system("Color 01");
-			//printf ("Meu %c primeiro %c programa em C e C++ \n\n",34,34);
 			if(maze[i][j] == 'o') cout << "\x1b[31mo\x1b[0m";
 			else printf("%c", maze[i][j]);
 		}
@@ -162,7 +160,6 @@ bool walk(pos_t pos) {
 			if(compare(pos, 's', &prox, &valid_positions))
 			{
 				maze[pos.i][pos.j] = '.';
-                cout << ">>";
 				sFound = 1;
 				return 1;
 			}
@@ -225,20 +222,17 @@ void printTimer()
 		system("clear");
 		print_maze();
 		this_thread::sleep_for(chrono::milliseconds(50));
-        if(sFound) cout << "\tACHOU\n";
 	}while (true);
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
-    pos_t initial_pos = load_maze("../data/maze7.txt"/*argv[1]*/);    
+    pos_t initial_pos = load_maze(argv[1]);    
     
     thread first(walk, initial_pos);
     thread timer(printTimer);
 
     first.join();
     timer.detach();
-	//print_maze();
-	cout << sFound << endl;
     return 1;
 }
